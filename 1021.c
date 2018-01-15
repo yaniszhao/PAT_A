@@ -11,7 +11,6 @@ typedef struct stNode {
 } Node;
 
 Node *edge[MAXLEN]={0};
-int edge2[MAXLEN]={0};
 
 int HaveEdge(int u, int v)
 {
@@ -28,26 +27,15 @@ int HaveEdge(int u, int v)
     return 0;
 }
 
-#define HaveEdge2(u, v) (edge2[v])
-
-void RefleshEdge(int u)
-{
-    Node *p;
-    memset(edge, 0, MAXLEN*sizeof(*edge));
-    p=edge[u];
-    while (p) {
-        edge2[p->v]=1;
-        p=p->next;
-    }
-}
-
 void dfs(char visit[], int n, int root)
 {
-    int i;
+    Node *p=edge[root];
     visit[root]=1;
-    for (i=1; i<=n; i++)
-        if (!visit[i] && HaveEdge2(root, i))
-            dfs(visit, n, i);
+    while (p) {
+        if (!visit[p->v])
+            dfs(visit, n, p->v);
+        p=p->next;
+    }
 }
 
 int CountComponent(int n)
@@ -57,7 +45,6 @@ int CountComponent(int n)
     memset(visit, 0, MAXLEN);
     for (i=1; i<=n; i++) {
         if (!visit[i]) {
-            RefleshEdge(i);
             cnt++;
             dfs(visit, n, i);
         }
@@ -68,14 +55,18 @@ int CountComponent(int n)
 int GetDeep(int n, int u)
 {//递归
     static char visit[MAXLEN]={0};
-    int i, d, maxd=0;
+    Node *p=edge[u];
+    int d, maxd=0;
     visit[u]=1;
-    for (i=1; i<=n; i++) {
-        if (!visit[i] && HaveEdge2(u, i)) {
-            d=GetDeep(n, i);
+
+    while (p) {
+        if (!visit[p->v]) {
+            d=GetDeep(n, p->v);
             if (d>maxd) maxd=d;
         }
+        p=p->next;
     }
+    
     visit[u]=0;
     return maxd+1;
 }
@@ -83,19 +74,22 @@ int GetDeep(int n, int u)
 int GetDeep2(int n, int u)
 {//bfs
     int visit[MAXLEN]={0};
-    int i, last, deep=0;
+    Node *p;
+    int last, deep=0;
     int que[MAXLEN], head=0, tail=0;
     visit[u]=1;
     que[tail++]=u; last=u;
+    
     while (head!=tail)
     {
         u=que[head++];
-
-        for (i=1; i<=n; i++) {
-            if (!visit[i] && HaveEdge2(u, i)) {
-                visit[i]=1;
-                que[tail++]=i;
+        p=edge[u];
+        while (p) {
+            if (!visit[p->v]) {
+                visit[p->v]=1;
+                que[tail++]=p->v;
             }
+            p=p->next;
         }
 
         if (u==last) {
@@ -108,6 +102,7 @@ int GetDeep2(int n, int u)
 }
 
 //直接用数组会超内存,用char也超；动态数组会超内存；领接表会超时
+//仿造stl的vector还是过了
 void fun1()
 {
     //int edge[MAXLEN][MAXLEN];//用数组存空间太大
