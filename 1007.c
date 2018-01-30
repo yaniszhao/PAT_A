@@ -51,6 +51,11 @@ void fun1()
 	printf("%d %d %d", maxsum, seq[s], seq[d]);
 }
 
+//最大子串一般有四种方法：
+//1、暴力法，我用的这种，还可以改进
+//2、分治法，max(全左，中间，全右)
+//3、分析法，sum(i,j)=sum[j]-sum[i]
+//4、动态规划
 int main(int argc, char *argv[])
 {
 	fun1();
