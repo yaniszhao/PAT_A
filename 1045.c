@@ -26,7 +26,7 @@ void fun1()
     for (i=0; i<len; i++)
         scanf("%d", &colors[i]);
 
-    for (i=0,j=0; i<len;)//去掉不喜欢的颜色
+    for (i=0,j=0; i<len;)//去掉不喜欢的颜色,也可以在存入不在喜欢的里面不存入
         if (map[colors[i]]==0) i++;
         else colors[j++]=colors[i++];
     len=j;
