@@ -158,7 +158,7 @@ int IsIndexInStk(int stk[], int top, int idx)
 	return 0;
 }
 
-void bfs(int stk[], int top, int n)
+void dfs(int stk[], int top, int n)
 {
 	int cur=stk[top];
 	int tdist=0, twgt=wgt[stk[0]];
@@ -198,7 +198,7 @@ void bfs(int stk[], int top, int n)
 			printf("cur:%d, i:%d\n", cur, i);
 #endif
 			stk[top+1] = i;
-			bfs(stk, top+1, n);
+			dfs(stk, top+1, n);
 		}
 	}
 
@@ -216,13 +216,13 @@ void DfsTrave(int c1, int c2, int n)
 	}
 
 	stk[top++] = c1;
-	bfs(stk, top, n);
+	dfs(stk, top, n);
 
 	printf("%d %d", snum[c2], maxwgt[c2]);
 }
 //===========================================================
 int visit[MAX]={0};
-void bfs2(int v, int pre, int n)
+void dfs2(int v, int pre, int n)
 {
 	int i;
 
@@ -245,7 +245,7 @@ void bfs2(int v, int pre, int n)
 	for (i=0; i<n; i++) {
 		if (edge[v][i]!=INF && v!=i && !visit[i]){
 			visit[i]=1;
-			bfs2(i, v, n);
+			dfs2(i, v, n);
 			visit[i]=0;
 		}
 	}
@@ -260,7 +260,7 @@ void DfsTrave2(int c1, int c2, int n)
 		maxwgt[i] = -1;
 	}
 	visit[c1]=1;
-	bfs2(c1, -1, n);
+	dfs2(c1, -1, n);
 
 	printf("%d %d", snum[c2], maxwgt[c2]);
 }
