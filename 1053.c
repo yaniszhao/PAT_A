@@ -10,7 +10,7 @@ int result[MAX][MAX+1]={0}, cnt=0;//多加一个字符存-1，表结尾
 int stk[MAX];
 int n,m,s;
 
-void  bfs(int u, int level)
+void  dfs(int u, int level)
 {
     int i,sum=0;
     
@@ -27,7 +27,7 @@ void  bfs(int u, int level)
     }
     else {
         for (i=0; i<vnum[u]; i++)
-            bfs(e[u][i], level+1);
+            dfs(e[u][i], level+1);
     }
 }
 
@@ -55,7 +55,7 @@ void fun1()
         }
     }
     
-    bfs(0, 1);
+    dfs(0, 1);
     qsort(result, cnt, sizeof(result[0]), cmp);
     for (i=cnt-1; i>=0; i--) {//排序按大到小排有问题，就小大排，逆序输出
         printf("%d", result[i][0]);
@@ -66,7 +66,7 @@ void fun1()
 }
 
 //=====================================================
-void  bfs2(int u, int level, int sum)
+void  dfs2(int u, int level, int sum)
 {//加个了sum的变量，省去循环求sum值
     int i;
     stk[level-1]=u;
@@ -81,7 +81,7 @@ void  bfs2(int u, int level, int sum)
     }
     else {
         for (i=0; i<vnum[u]; i++)
-            bfs2(e[u][i], level+1, sum);
+            dfs2(e[u][i], level+1, sum);
     }
 }
 
@@ -108,7 +108,7 @@ void fun2()
         qsort(e[i], vnum[i], sizeof(e[0][0]), cmp2);
     }
     
-    bfs2(0, 1, 0);
+    dfs2(0, 1, 0);
     for (i=0; i<cnt; i++) {//排序按大到小排有问题，就小大排，逆序输出
         printf("%d", result[i][0]);
         for (j=1; result[i][j]!=-1; j++)
