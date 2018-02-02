@@ -68,17 +68,32 @@ void fun1()
 }
 //==============================================
 int map[MAX];
+int GetSumFromMap(int left, int right)
+{
+    int sum=0;
+    while (left<=right)
+        sum+=map[left++];
+    return sum;
+}
 //key肯定是正整数，栈为空返回0
 int PeekMedian2()
 {
     int i=1, n=top/2+1;
+    int left=0, right=MAX, mid, sum;
     if (top==-1) return 0;
-    for (i=0; i<MAX;) {
-        if (map[i]==0) i++;
-        else if (n>map[i]) {n=n-map[i]; i++;}
-        else return i;
+//    for (i=0; i<MAX;) {
+//        if (map[i]==0) i++;
+//        else if (n>map[i]) {n=n-map[i]; i++;}
+//        else return i;
+//    }
+//    return 0;
+    while (left<right) {
+        mid=(left+right)/2;
+        sum=GetSumFromMap(0,mid);
+        if (sum>=n) right=mid;
+        else left=mid+1;
     }
-    return 0;
+    return left;
 }
 
 //当栈满，返回0
@@ -108,7 +123,7 @@ void fun2()
     for (i=0; i<n; i++) {
        scanf("%s", opt);
        if (opt[1]=='e') {//PeekMedian
-           //ans=PeekMedian2();
+           ans=PeekMedian2();
            if (ans==0) printf("Invalid\n");
            else printf("%d\n", ans);
        }
@@ -272,12 +287,13 @@ void fun4()
 
 //1、方法1和方法3都一样，查值前保证有序，然后根据下标取值
 //2、方法2用的hash表，最后确定取第几大的值，然后遍历hash取值
+//方法2改成2分法还是超时，复杂度O(nlogn)
 //3、前3种方法本质上没什么区别，都有三个用例超时
 //4、第4种方法模仿方法2用树状数组，通过计算个数2分得到结果
-//方法2查询的复杂度是O(MAX),方法4二分乘求和即O(logn*logn),
+//方法2查询的复杂度是O(MAX),改了二分后O(nlogn)，方法4二分乘求和即O(logn*logn),
 //而且push和pop都还增加了update操作效率还比方法2高很多
 int main(int argc, char *argv[])
 {
-   fun4();
+   fun2();
 }
 
