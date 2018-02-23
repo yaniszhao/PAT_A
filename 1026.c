@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXTIME 1e7//10000
+#define MAXTIME 1e7
 #define MAXTIMESTR 10
-#define MAX 10//10000
-#define TABLEMAX 11//101
+#define MAX 10000
+#define TABLEMAX 100
 
 #define TimeToSec(h, m, s) (h*3600+m*60+s)
-
+#define MIN(a, b) (a<b?a:b)
 
 typedef struct stPlayer {
     int atime;//arrive
@@ -24,6 +24,13 @@ typedef struct stTable {
     int cnt;
 } Table;
 
+int cmp(const void *a, const void *b)
+{
+    Player *x=(Player *)a;
+    Player *y=(Player *)b;
+    return x->atime-y->atime;
+}
+
 void SortPlayer(Player arr[], int n)
 {
     int i,j,min;
@@ -38,13 +45,12 @@ void SortPlayer(Player arr[], int n)
         memcpy(&arr[i], &arr[min], sizeof(arr[0]));
         memcpy(&arr[min], &t, sizeof(arr[0]));
     }
-    
 }
 
 int GetEndTime(Table t[], int n)
 {
     int i, endtime=MAXTIME;
-    
+
     for (i=0; i<n; i++)
         if (t[i].endtime<endtime) endtime=t[i].endtime;
     return endtime;
@@ -53,7 +59,7 @@ int GetEndTime(Table t[], int n)
 int GetNextEndTime(Table t[], int n, int endtime)
 {
     int i, next=MAXTIME;
-    
+
     for (i=0; i<n; i++) {
         if (t[i].endtime==endtime) continue;
         if (t[i].endtime<next) next=t[i].endtime;
@@ -104,8 +110,7 @@ int GetVipPeopleIndexFromWait(Player wait[], int head, int tail)
     return -1;
 }
 
-
-void HandWaitQueForVip(Player wait[], int index, int *tail)
+void HandWaitQue(Player wait[], int index, int *tail)
 {
     int i;
     for (i=index; i<*tail-1; i++)
@@ -115,11 +120,10 @@ void HandWaitQueForVip(Player wait[], int index, int *tail)
 
 void SecToTime(char time[], int sec)
 {
-    int h,m,s;
-    h=sec/3600;
-    m=sec%3600/60;
-    s=sec%60;
-    sprintf(time, "%02d:%02d:%02d", h, m, s);
+    int h,m;
+    h=sec/3600; sec%=3600;
+    m=sec/60; sec%=60;
+    sprintf(time, "%02d:%02d:%02d", h, m, sec);
 }
 
 void fun1()
@@ -131,117 +135,84 @@ void fun1()
     int whead=0, wtail=0;//wait que
     int vhead=0, vtail=0;//visited que
     Table tables[TABLEMAX];
-    int ftables, vtables, wpeople, vpeople;
+    int ftables, fvtables, wpeople=0, vpeople=0;
     int n,m,k;
     int hour,min,sec;
     int i,j;
     int endtime, nextendtime;
     int tindex,windex;//table index and wait index
     char s1[MAXTIMESTR], s2[MAXTIMESTR];
-    
+
     scanf("%d", &n);
     for (i=0; i<n ; i++) {
         scanf("%d:%d:%d %d %d", &hour, &min, &sec, &player[tail].ptime, &player[tail].vip);
         player[tail].atime=TimeToSec(hour, min, sec);
+        if (player[tail].atime>=21*3600) continue;
         if (player[tail].ptime>120) player[tail].ptime=120;
         player[tail].ptime=player[tail].ptime*60;//改成秒
-        if (player[tail].atime>=21*3600) continue;
         tail++;
     }
-    
+
     scanf("%d%d", &m, &k);
     for (i=0; i<m; i++) {//init tables
         tables[i].endtime=8*3600;
         tables[i].vip=0;
         tables[i].cnt=0;
     }
-    for (i=0; i<k ; i++) {
+    for (i=0; i<k; i++) {
         scanf("%d", &j);
-        tables[j-1].vip=1;//假设从0开始，题目上没说清
+        tables[j-1].vip=1;//假设从0开始
     }
-    
-    SortPlayer(player, tail);
 
-    while (head!=tail) {
+    //SortPlayer(player, tail);
+    qsort(player, tail, sizeof(player[0]), cmp);
+
+    while (head!=tail || whead!=wtail) {
         endtime=GetEndTime(tables, m);
-        ftables=0; vtables=0;
+        if (endtime>=21*3600) break;//要加等号
+
+        ftables=0; fvtables=0;//free tables and vip tables
         for (i=0; i<m; i++) {//计算空余的桌子
             if (tables[i].endtime==endtime) {
                 ftables++;
-                if (tables[i].vip==1) vtables++;
-            }
-        }
-        
-        if (endtime>=21*3600)//要加等号
-            break;
-        
-        while (player[head].atime<=endtime)//等待的人入列
-            wait[wtail++]=player[head++];
-        
-        wpeople=wtail-whead;
-        vpeople=GetVipPeopleNumFromWait(wait, whead, wtail);
-        
-        while (ftables>0 && wpeople>0) {//有空桌且有人
-            if (vtables>0 && vpeople>0) {//有vip桌有vip人：最小vip桌配最早vip人
-                tindex=GetVipTableIndex(tables, endtime, m);
-                windex=GetVipPeopleIndexFromWait(wait, whead, wtail);
-                wait[windex].start=endtime;//确定开始时间
-                wait[windex].wtime=endtime-wait[windex].atime;//确定等待时间
-                visited[vtail++]=wait[windex];//放入已访问队列
-                tables[tindex].cnt++;
-                tables[tindex].endtime=endtime+wait[windex].ptime;//更新时间
-                HandWaitQueForVip(wait, windex, &wtail);//把vip从等待队列中去除
-                ftables--; vtables--;
-                wpeople--; vpeople--;
-            }
-            else if (vtables>0 && vpeople==0) {//有vip桌无vip人：有普通桌配普通人，无普通桌vip桌配普通人
-                if (ftables-vtables>0) {//有普通桌
-                    tindex=GetNormalTableIndex(tables, endtime, m);
-                    windex=whead;
-                    wait[windex].start=endtime;
-                    wait[windex].wtime=endtime-wait[windex].atime;
-                    visited[vtail++]=wait[windex];
-                    tables[tindex].cnt++;
-                    tables[tindex].endtime=endtime+wait[windex].ptime;
-                    whead++;
-                    ftables--;
-                    wpeople--;
-                }
-                else {//无普通桌
-                    tindex=GetVipTableIndex(tables, endtime, m);
-                    windex=whead;
-                    wait[windex].start=endtime;
-                    wait[windex].wtime=endtime-wait[windex].atime;
-                    visited[vtail++]=wait[windex];
-                    tables[tindex].cnt++;
-                    tables[tindex].endtime=endtime+wait[windex].ptime;//更新时间
-                    whead++;
-                    ftables--; vtables--;
-                    wpeople--;
-                }
-            }
-            else {//无vip桌：按顺序分配
-                tindex=GetNormalTableIndex(tables, endtime, m);
-                windex=whead;
-                wait[windex].start=endtime;
-                wait[windex].wtime=endtime-wait[windex].atime;
-                visited[vtail++]=wait[windex];
-                tables[tindex].cnt++;
-                tables[tindex].endtime=endtime+wait[windex].ptime;
-                whead++;
-                ftables--;
-                wpeople--; vpeople=(visited[tail-1].vip==1?vpeople-1:vpeople);
+                if (tables[i].vip==1) fvtables++;
             }
         }
 
-        nextendtime=GetNextEndTime(tables, m, endtime);
-        while (ftables>0) {//还有空桌，要更新时间，要考虑后一个桌面最小时间和玩家最小时间哪个小
-            tindex=GetTableIndex(tables, endtime, m);
-            tables[tindex].endtime=player[head].atime<nextendtime?player[head].atime:nextendtime;
-            ftables--;
+        while (head!=tail && player[head].atime<=endtime) {//等待的人入列
+            wait[wtail++]=player[head++];
+            wpeople++;
+            if (wait[wtail-1].vip) vpeople++;
+        }
+
+        while (ftables>0 && wpeople>0) {//有空桌且有人
+            if (fvtables>0 && vpeople>0) {//有vip桌有vip人：最小vip桌配最早vip人
+                tindex=GetVipTableIndex(tables, endtime, m);
+                windex=GetVipPeopleIndexFromWait(wait, whead, wtail);
+            }
+            else {//无vip桌：按顺序分配
+                tindex=GetTableIndex(tables, endtime, m);
+                windex=whead;
+            }
+            wait[windex].start=endtime;//确定开始时间
+            wait[windex].wtime=endtime-wait[windex].atime;//确定等待时间
+            visited[vtail++]=wait[windex];//放入已访问队列
+            tables[tindex].cnt++;
+            tables[tindex].endtime=endtime+wait[windex].ptime;//更新时间
+            HandWaitQue(wait, windex, &wtail);//从等待队列中去除
+            if (tables[tindex].vip) fvtables--;
+            if (visited[vtail-1].vip) vpeople--;
+            ftables--; wpeople--;
+        }
+
+        if (ftables>0 && head!=tail) {//还有空桌，要更新时间，要考虑后一个桌面最小时间和玩家最小时间哪个小
+            nextendtime=GetNextEndTime(tables, m, endtime);
+            nextendtime=MIN(nextendtime, player[head].atime);
+            for (i=0; i<m; i++)
+                if (tables[i].endtime==endtime) tables[i].endtime=nextendtime;
         }
     }
-    
+
     for (i=vhead; i<vtail; i++) {
         SecToTime(s1, visited[i].atime);
         SecToTime(s2, visited[i].start);
@@ -253,26 +224,14 @@ void fun1()
     }
 }
 
-/*
-1、一桌一人：
-    vip桌：直接入
-    普通桌：直接入
-2、一桌多人：
-    vip桌：队列有vip入vip
-    普通桌：入队列第一个
-3、多桌一人：
-    vip人：有vip桌，入最小的vip桌；没vip桌，入最小的普通桌
-    普通人：有普通桌，入最小的普通桌；没普通桌，入最小的vip桌
-4、多桌多人：
-    while （桌大于0且人大于0）
-        有vip桌有vip人：最小vip桌配最早vip人
-        有vip桌无vip人：有普通桌配普通人，无普通桌vip桌配普通人
-        无vip桌：按顺序分配
- 有了第四个，可以不要前面三个
-*/
-
+//1、把握好table和wait、player的关系，继续循环的条件是(endtime小于9点 且 (wait不空或player不空))；
+//搞清楚这3个关系，循环内判断endtime或者wait、player都可以，之前用player判断会遗漏wait还有的情况
+//2、分配桌子的情况其实很简单：有vip桌和vip人则优先分配vip，其他情况按顺序分配就行了
+//我之前想复杂了，认为没vip人的时候普通人优先分配普通桌，其实是按顺序分配
+//3、循环分配完后如果还有空桌，要根据最近的结束时间和下一位玩家时间更新结束时间
+//4、等待时间要四舍五入
 int main(int argc, char *argv[])
 {
     fun1();
-
 }
+
