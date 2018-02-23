@@ -53,6 +53,8 @@ void fun2()
 
 }
 
+//1、要处理字符串，还要在对应字符串存储不止一个的数值，用c写比较麻烦了，还是推荐cpp
+//2、cpp直接map加string加set就只有一个用例超时，想不超时则用hash
 int main(int argc, char *argv[])
 {
     fun1();
