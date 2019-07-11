@@ -36,6 +36,7 @@ void fun2()
     }
 }
 
+//格式化输出a+b的值，即对值加上逗号。如 -1000000+9=-999,991
 int main(int argc, char *argv[])
 {
     fun2();

@@ -30,6 +30,7 @@ void fun1()
     cin>>n;
     for (int i=0; i<n; i++) {
         cin>>exp>>coe;
+        //直接在这里乘以A的每个数，可以减少B的存储空间。
         for (int j=0; j<v.size(); j++)
             map[exp+v[j].exp]+=coe*v[j].coe;
     }

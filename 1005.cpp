@@ -7,6 +7,7 @@ using namespace std;
 
 char *map[]={"zero", "one", "two", "three", "four", \
         "five", "six", "seven", "eight", "nine"};
+        
 void fun1()
 {
     string s;
@@ -19,6 +20,7 @@ void fun1()
         cout<<' '<<map[*it-'0'];
 }
 
+//fun1:先求和然后转出字符串，在打印每一个字节对应的英文字符。
 int main(int argc, char *argv[])
 {
     fun1();

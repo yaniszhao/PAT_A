@@ -47,7 +47,7 @@ void fun1()
 		scanf("%d", &chk);
 		getchar();
 		memset(visit, 0, MAX*sizeof(int));
-		visit[chk] = 1;
+		visit[chk] = 1;//有了这个就不用复制edge然后删除相应的边了。
 		cnt = 0;
 #if DEBUG
 	for (j=1; j<=n; j++) {

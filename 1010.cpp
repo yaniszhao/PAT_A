@@ -22,6 +22,8 @@ LLONG Judge(LLONG n1, string s2)
     int max=0;
     LLONG low, high, mid, n2;
     for (auto it : s2) if (map[it]>max) max=map[it];
+    //进制最少比出现过的字符的最大值多1。
+    //比如，出现过1进制最少是2进制，出现过a最少是11进制。
     low=max+1;
     high=n1;//最大n1就够了，不要取LLONG_MAX
     while (low<=high) {

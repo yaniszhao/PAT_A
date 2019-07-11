@@ -18,7 +18,7 @@ LLONG StrToIntWithRadix(char s[], LLONG radix)
     LLONG sum=0;
     int i;
     for (i=0; s[i]!='\0'; i++) {
-        sum=sum*radix+GetNumFromChar(s[i]);
+        sum=sum*radix+GetNumFromChar(s[i]);//关键代码
     }
     return sum;
 }

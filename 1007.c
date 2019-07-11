@@ -57,6 +57,7 @@ void fun1()
 //2、分治法，max(全左，中间，全右)
 //3、分析法，sum(i,j)=sum[j]-sum[i]
 //4、动态规划
+//详细的多种解法参见leetcode的53题
 int main(int argc, char *argv[])
 {
 	fun1();

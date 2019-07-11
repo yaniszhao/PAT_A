@@ -170,15 +170,15 @@ typedef struct stNode {
 	struct stNode *nxtsib;
 } Node;
 
-Node *GetAddById(Node *p, int id)
+Node *GetAddrById(Node *p, int id)
 {
 	Node *tmp;
 	if (!p) return NULL;
 	if (p->id == id)
 		return p;
-	if (tmp=GetAddById(p->fstchd, id))
+	if (tmp=GetAddrById(p->fstchd, id))
 		return tmp;
-	if (tmp=GetAddById(p->nxtsib, id))
+	if (tmp=GetAddrById(p->nxtsib, id))
 		return tmp;
 	return NULL;
 }
@@ -240,7 +240,7 @@ int CreateTree(Node **proot)
 			}
 		}
 		for (j=0; j<maxhead; j++) {
-			if (p=GetAddById(root, id)) {
+			if (p=GetAddrById(root, id)) {
 				break;
 			}
 		}
@@ -273,8 +273,9 @@ void SetInfo(Node *p, int noleaf[], int dep)
 	SetInfo(p->nxtsib, noleaf, dep);
 }
 
+//用这个有些测试用例过不了
 void fun4()
-{//can not get all scores
+{
 	Node *root;
 	int n, i;
 	int noleaf[MAX]={0};
@@ -286,6 +287,10 @@ void fun4()
 	for (i=1; i<=maxdep; i++) printf(" %d", noleaf[i]);
 }
 
+//fun1类似邻接表法，然后用dfs
+//fun2类似邻接表法，然后用bfs
+//fun3用的双亲表示法
+//fun4用的孩子兄弟法建树
 int main(int argc, char *argv[])
 {
 	//fun1();

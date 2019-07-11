@@ -60,6 +60,7 @@ void fun1()
 //2、损失结点不用拷贝e然后去掉相邻边，只需要把visit置1访问就会绕过它
 //3、dfs和bfs都可以，dfs代码简单
 //4、最后一个用例都快超时了，想必是cin和cout效率要差一些的原因
+//5、还可以用并查集来做
 int main(int argc, char *argv[])
 {
     fun1();

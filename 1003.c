@@ -1,14 +1,3 @@
-/*
-test:
-5
-0 1 1
-0 2 2
-0 3 1
-1 2 1
-2 4 1
-3 4 1
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +10,7 @@ test:
 #define DEBUG 0
 
 int N,M,C1,C2;
-int wgt[MAX];//weight
+int wgt[MAX];//每个点的权值
 int edge[MAX][MAX]={0};
 int dist[MAX]={0};
 int vset[MAX]={0};//visited set
@@ -32,20 +21,23 @@ void InitEdge()
 {
 	int i,j,k,w;
 	char pr[1024];
+
 	for (i=0; i<MAX; i++)
 		for (j=0; j<MAX; j++)
 			edge[i][j] = (i==j ? 0 : INF);
 
 	scanf("%d %d %d %d", &N, &M, &C1, &C2);
 	getchar();
+
 	for (i=0; i<N; i++) {
 		scanf("%d", &wgt[i]);
 		getchar();
 	}
+
 	for (k=0; k<M; k++) {
 		scanf("%d %d %d", &i, &j, &w);
 		getchar();
-		edge[i][j] = edge[j][i] = w;//no direction
+		edge[i][j] = edge[j][i] = w;//无向图
 	}
 
 #if DEBUG
@@ -205,8 +197,9 @@ void dfs(int stk[], int top, int n)
 
 }
 
+//用这个有些测试用例过不了
 void DfsTrave(int c1, int c2, int n)
-{//can not get full score
+{
 	int stk[MAX], top=-1;
 	int i;
 
@@ -265,6 +258,8 @@ void DfsTrave2(int c1, int c2, int n)
 	printf("%d %d", snum[c2], maxwgt[c2]);
 }
 
+//1、用Dijk算法，注意更新个数num[i]的赋值关系
+//2、用dfs算法，时间可能会长点，但是这题数据不大比较适合
 int main(int argc, char *argv[])
 {
 	InitEdge();

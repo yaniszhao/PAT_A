@@ -20,7 +20,8 @@ void fun1()
 
     for (int a=0; a<v.size(); a++) {
         int tsum=0;
-        if (v[a]<0) continue;//进入循环证明至少有一个数>=0
+        if (v[a]<0) continue;
+        //进入循环证明至少有一个数>=0
         for (int b=a; b<v.size(); b++) {
             tsum+=v[b];
             if (tsum>sum) {sum=tsum; i=a; j=b;}
@@ -30,6 +31,7 @@ void fun1()
     cout<<sum<<' '<<v[i]<<' '<<v[j];
 }
 
+//参考liuchuo的代码，类似leetcode上速度最快的那种方法。
 void fun2()
 {
     vector<int> v;
@@ -65,6 +67,7 @@ void fun2()
 //fun1是暴力破解，复杂度O(n^2)，这题时间还可以接受
 //fun2是改进后的算法，复杂度只有O(n)，但不容易理解
 //求最大子串一般4种方法：暴力法、分治法、分析法、动态规划
+//详细的多种解法参见leetcode的53题
 int main(int argc, char *argv[])
 {
     fun2();

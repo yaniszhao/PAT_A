@@ -50,6 +50,7 @@ void fun1()
 #endif
 }
 
+//fun1:先求和然后转出字符串，在打印每一个字节对应的英文字符。
 int main(int argc, char *argv[])
 {
 	fun1();
